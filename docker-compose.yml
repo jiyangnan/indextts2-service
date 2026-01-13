@@ -1,0 +1,65 @@
+# IndexTTS2 微服务 Docker Compose 配置
+# 用于本地开发和测试
+
+version: '3.8'
+
+services:
+  # IndexTTS2 API 服务
+  indextts2-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: final
+    container_name: indextts2-service
+    ports:
+      - "8000:8000"
+    environment:
+      # 模型配置
+      - MODEL_DIR=/app/checkpoints
+      - CONFIG_PATH=/app/checkpoints/config.yaml
+      - USE_FP16=true
+      - USE_CUDA_KERNEL=false
+      - USE_DEEPSPEED=false
+
+      # 存储配置（开发环境使用本地存储）
+      - LOCAL_STORAGE_DIR=/app/data/audio
+      - LOCAL_BASE_URL=http://localhost:8000
+
+      # 日志级别
+      - LOG_LEVEL=info
+
+    volumes:
+      # 本地存储（开发环境）
+      - ./data:/app/data
+
+      # GPU 支持（需要 nvidia-docker）
+      # deploy:
+      #   resources:
+      #     reservations:
+      #       devices:
+      #         - driver: nvidia
+      #           count: 1
+      #           capabilities: [gpu]
+
+    restart: unless-stopped
+
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Redis（可选，用于缓存）
+  redis:
+    image: redis:7-alpine
+    container_name: indextts2-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  redis_data:
