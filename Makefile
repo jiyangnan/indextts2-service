@@ -1,6 +1,6 @@
 # IndexTTS2 微服务 Makefile
 
-.PHONY: help install dev test build docker-push deploy
+.PHONY: help install dev test build docker-login docker-push deploy
 
 # 默认目标
 .DEFAULT_GOAL := help
@@ -10,6 +10,11 @@ BLUE := \033[0;34m
 GREEN := \033[0;32m
 YELLOW := \033[0;33m
 NC := \033[0m # No Color
+
+# Docker 镜像配置
+IMAGE_NAME := ghcr.io/jiyangnan/indextts2-service
+IMAGE_TAG := v2.0.0
+REGISTRY := ghcr.io
 
 ## help: 显示帮助信息
 help:
@@ -52,12 +57,24 @@ format:
 ## build: 构建 Docker 镜像
 build:
 	@echo "$(BLUE)构建 Docker 镜像...$(NC)"
-	@docker build -t indextts2-service:latest .
+	@docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+	@docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(IMAGE_NAME):latest
+	@echo "$(GREEN)✅ 镜像构建完成: $(IMAGE_NAME):$(IMAGE_TAG)$(NC)"
 
-### docker-push: 推送 Docker 镜像
-docker-push: build
-	@echo "$(BLUE)推送镜像...$(NC)"
-	@docker push indextts2-service:latest
+### docker-login: 登录 GitHub Container Registry
+docker-login:
+	@echo "$(BLUE)登录 GitHub Container Registry...$(NC)"
+	@echo "$$GITHUB_PAT" | docker login $(REGISTRY) -u jiyangnan --password-stdin
+	@echo "$(GREEN)✅ GHCR 登录成功$(NC)"
+
+### docker-push: 推送 Docker 镜像到 GHCR
+docker-push: docker-login build
+	@echo "$(BLUE)推送镜像到 GHCR...$(NC)"
+	@docker push $(IMAGE_NAME):$(IMAGE_TAG)
+	@docker push $(IMAGE_NAME):latest
+	@echo "$(GREEN)✅ 镜像推送完成: $(IMAGE_NAME):$(IMAGE_TAG)$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📦 查看镜像: https://github.com/jiyangnan?tab=packages$(NC)"
 
 ### deploy: 部署到 RunPod
 deploy:
