@@ -35,7 +35,7 @@ cp .env.example .env
 docker-compose up --build
 
 # 访问 API 文档
-open http://localhost:8000/docs
+open http://localhost:8001/docs
 ```
 
 ### 方式 2: RunPod 部署（生产环境）
@@ -55,11 +55,12 @@ docker push your-registry/indextts2-service:latest
    - **镜像**: `your-registry/indextts2-service:latest`
    - **GPU**: RTX 4090
    - **容器磁盘**: 50GB
-   - **端口**: 8000
+   - **端口**: 8001
    - **环境变量**:
      ```
      MODEL_DIR=/app/checkpoints
      USE_FP16=true
+     API_PORT=8001
      ```
 
 #### 步骤 3: 启动实例

@@ -77,11 +77,16 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
+    import os
+    from dotenv import load_dotenv
+
+    # 加载环境变量
+    load_dotenv()
 
     uvicorn.run(
         "app.main:app",
-        host="0.0.0.0",
-        port=8000,
+        host=os.getenv("API_HOST", "0.0.0.0"),
+        port=int(os.getenv("API_PORT", "8001")),
         reload=True,
-        log_level="info"
+        log_level=os.getenv("LOG_LEVEL", "info")
     )

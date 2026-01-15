@@ -67,12 +67,15 @@ ENV USE_FP16=true
 ENV USE_CUDA_KERNEL=false
 ENV USE_DEEPSPEED=false
 
-# 暴露端口
-EXPOSE 8000
+# 暴露端口（8001 避免与 MagicTale 后端 8000 冲突）
+EXPOSE 8001
+
+# 环境变量（添加 API_PORT）
+ENV API_PORT=8001
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD curl -f http://localhost:8001/health || exit 1
 
 # 启动命令
-CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]

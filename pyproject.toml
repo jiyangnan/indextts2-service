@@ -10,15 +10,19 @@ dependencies = [
     "pydantic>=2.5.0",
     "httpx>=0.25.0",
     "python-multipart>=0.0.6",
-    "torch>=2.1.0",
-    "torchaudio>=2.1.0",
-    "librosa>=0.10.0",
-    "soundfile>=0.12.0",
+    # 基础依赖（所有平台）
     "numpy>=1.24.0",
-    "boto3>=1.34.0",
-    "redis>=5.0.0",
     "python-dotenv>=1.0.0",
     "pyyaml>=6.0.0",
+    # 存储和缓存
+    "boto3>=1.34.0",
+    "redis>=5.0.0",
+    # IndexTTS2 相关依赖（仅 Linux + GPU）
+    # macOS 开发环境使用 Mock 模式
+    "torch>=2.1.0; sys_platform == 'linux'",
+    "torchaudio>=2.1.0; sys_platform == 'linux'",
+    "librosa>=0.10.0; sys_platform == 'linux'",
+    "soundfile>=0.12.0; sys_platform == 'linux'",
 ]
 
 [project.optional-dependencies]

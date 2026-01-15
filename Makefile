@@ -30,7 +30,7 @@ install:
 ## dev: 启动开发服务器
 dev:
 	@echo "$(BLUE)启动开发服务器...$(NC)"
-	@uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+	@uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
 
 ## test: 运行测试
 test:

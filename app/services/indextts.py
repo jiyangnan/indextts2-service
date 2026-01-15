@@ -293,7 +293,11 @@ class IndexTTS2Service:
 
     def gpu_available(self) -> bool:
         """检查 GPU 是否可用"""
-        return torch.cuda.is_available()
+        try:
+            return torch.cuda.is_available()
+        except AttributeError:
+            # macOS CPU 版本的 PyTorch 没有 cuda 属性
+            return False
 
     def _create_mock_model(self):
         """创建 Mock 模型（用于开发测试）"""
